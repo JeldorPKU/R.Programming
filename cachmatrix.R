@@ -1,0 +1,72 @@
+## R Programming Assignment 2
+## Jack Jiang, Department of Psychology, Peking University, China.
+
+## The two functions here are used to get rid of replicated calculation
+## of inverse matrix, which may cost plenty of time.
+
+## Usage:
+## ## 'x' refers to the matrix that we want to solve
+## > u <- makeCacheMatrix(x) ## Generate a function list 'u'
+## > cacheSolve(u)           ## returns the inverse matrix of 'x'
+
+## To change the matrix 'x' to 'y', use
+## > u$set(y)
+
+## To check the current matrix, use
+## > u$get()
+
+## To manually set the inverse matrix 'inv', use
+## > u$setinv(inv)
+
+## To get the inverse matrix of 'x', use
+## > u$getinv()
+## Caution: this function would return NULL if the inverse matrix
+##          of 'x' has been neither calculated nor set before.
+
+## Use
+## > cacheSolve(u)
+## to calculate the inverse matrix. If the result already exists in
+## the cache, then "getting cached data" would be printed on the 
+## screen, and the result will be printed(or assigned to a variable).
+
+makeCacheMatrix <- function(x = matrix()) {
+        ## 'x', default to be NA, is the matrix we want to change into
+        ## its inverse matrix
+        
+        ## This function reads 'x' as the only argument
+        ## and forms a list which contains four methods(functions)
+        
+        inverse <- NULL
+        
+        ## function 'set' reads a matrix 'y', gives its value
+        ## to 'x', and sets the cache('inverse') to NULL
+        set <- function(y) {
+                x <<- y
+                inverse <<- NULL
+        }
+        
+        ## function 'get' returns the original matrix 'x'
+        get <- function() x
+        
+        ## function 'setinv' gives the value of the argument 'inv'
+        ## to the cache 'inverse', while function 'getinv' returns
+        ## the value of 'inverse'
+        setinv <- function(inv) inverse <<- inv
+        getinv <- function() inverse
+        list(set = set, get = get,
+             setinv = setinv, getinv = getinv)
+}
+
+cacheSolve <- function(x, ...) {
+        ## Return a matrix that is the inverse of 'x'
+        
+        m <- x$getinv()
+        if (!is.null(m)) {
+                message("getting cached data")
+                return(m)
+        }
+        data <- x$get()
+        m <- solve(data)
+        x$setinv(m)
+        m
+}
